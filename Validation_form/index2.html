@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>XYZ Hospital - Patient Registration</title>
+<style>
+    :root {
+        --primary: #2d6cdf;
+        --secondary: #f7faff;
+        --accent: #00a78e;
+        --danger: #dc3545;
+        --success: #28a745;
+        --text: #333;
+        --radius: 10px;
+    }
+    body {
+        font-family: "Segoe UI", sans-serif;
+        margin: 0;
+        background: var(--secondary);
+        color: var(--text);
+    }
+    /* Navbar */
+    header {
+        background: var(--primary);
+        color: #fff;
+        padding: 12px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    header nav a {
+        color: #fff;
+        text-decoration: none;
+        margin: 0 10px;
+        font-weight: 500;
+    }
+    header nav a:hover {
+        text-decoration: underline;
+    }
+    /* Container */
+    .container {
+        max-width: 1100px;
+        margin: 20px auto;
+        padding: 20px;
+        display: grid;
+        grid-template-columns: 1fr 1.5fr;
+        gap: 20px;
+    }
+    /* Left: Department list */
+    .departments {
+        background: #fff;
+        border-radius: var(--radius);
+        padding: 20px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .dept-card {
+        padding: 12px;
+        border-radius: var(--radius);
+        margin-bottom: 10px;
+        background: var(--secondary);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        transition: 0.2s;
+    }
+    .dept-card:hover {
+        background: var(--primary);
+        color: #fff;
+        transform: translateY(-2px);
+    }
+    /* Right: Registration form */
+    .form-card {
+        background: #fff;
+        border-radius: var(--radius);
+        padding: 20px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    h2 {
+        margin-top: 0;
+        color: var(--primary);
+    }
+    .form-group {
+        margin-bottom: 15px;
+        position: relative;
+    }
+    .form-group input, .form-group select, .form-group textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: var(--radius);
+        font-size: 14px;
+        background: #fff;
+    }
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 500;
+    }
+    .checkbox-group {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+    .checkbox-group label {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 14px;
+    }
+    .btn {
+        padding: 10px 18px;
+        border: none;
+        border-radius: var(--radius);
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: bold;
+    }
+    .btn-primary {
+        background: var(--primary);
+        color: #fff;
+    }
+    .btn-secondary {
+        background: #f0f0f0;
+        color: #000;
+    }
+    .btn-primary:hover {
+        background: #1e54b7;
+    }
+    .error {
+        color: var(--danger);
+        font-size: 12px;
+        margin-top: 4px;
+    }
+    /* Modal */
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.5);
+        align-items: center; justify-content: center;
+    }
+    .modal-content {
+        background: #fff;
+        padding: 20px;
+        border-radius: var(--radius);
+        width: 300px;
+        text-align: center;
+    }
+</style>
+</head>
+<body>
+
+<header>
+    <div class="logo"><strong>XYZ Hospital</strong></div>
+    <nav>
+        <a href="#">Home</a>
+        <a href="#">Departments</a>
+        <a href="#">Contact</a>
+    </nav>
+</header>
+
+<div class="container">
+    <!-- Departments -->
+    <div class="departments">
+        <h3>Departments</h3>
+        <div class="dept-card" data-dept="Registration">📝 Registration</div>
+        <div class="dept-card" data-dept="ENT">👂 ENT</div>
+        <div class="dept-card" data-dept="Cardiology">❤️ Cardiology</div>
+        <div class="dept-card" data-dept="Orthopedics">🦴 Orthopedics</div>
+    </div>
+
+    <!-- Registration Form -->
+    <div class="form-card">
+        <h2>Patient Registration</h2>
+        <form id="regForm">
+            <div class="form-group">
+                <label for="name">Full Name *</label>
+                <input type="text" id="name" name="name" required />
+                <div class="error" id="errName"></div>
+            </div>
+            <div class="form-group">
+                <label for="phone">Phone *</label>
+                <input type="tel" id="phone" name="phone" required />
+                <div class="error" id="errPhone"></div>
+            </div>
+            <div class="form-group">
+                <label for="email">Email (Optional)</label>
+                <input type="email" id="email" name="email" />
+            </div>
+            <div class="form-group">
+                <label for="department">Department *</label>
+                <select id="department" name="department" required>
+                    <option value="">Select...</option>
+                    <option>Registration</option>
+                    <option>ENT</option>
+                    <option>Cardiology</option>
+                    <option>Orthopedics</option>
+                </select>
+                <div class="error" id="errDept"></div>
+            </div>
+            <div class="form-group">
+                <label>Service Type</label>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" name="service" value="First Visit" /> First Visit</label>
+                    <label><input type="checkbox" name="service" value="Follow-up" /> Follow-up</label>
+                    <label><input type="checkbox" name="service" value="Emergency" /> Emergency</label>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+            <button type="reset" class="btn btn-secondary">Reset</button>
+        </form>
+    </div>
+</div>
+
+<!-- Success Modal -->
+<div class="modal" id="successModal">
+    <div class="modal-content">
+        <h3>✅ Registration Successful</h3>
+        <p>We will contact you shortly.</p>
+        <button class="btn btn-primary" id="closeModal">OK</button>
+    </div>
+</div>
+
+<script>
+    // Auto-fill department from left side click
+    document.querySelectorAll(".dept-card").forEach(card => {
+        card.addEventListener("click", () => {
+            document.getElementById("department").value = card.dataset.dept;
+        });
+    });
+
+    // Form validation
+    document.getElementById("regForm").addEventListener("submit", function(e) {
+        e.preventDefault();
+        let valid = true;
+
+        const name = document.getElementById("name").value.trim();
+        const phone = document.getElementById("phone").value.trim();
+        const dept = document.getElementById("department").value;
+
+        document.getElementById("errName").textContent = "";
+        document.getElementById("errPhone").textContent = "";
+        document.getElementById("errDept").textContent = "";
+
+        // Form validation
+document.getElementById("regForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+    let valid = true;
+
+    const name = document.getElementById("name").value.trim();
+    const phone = document.getElementById("phone").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const dept = document.getElementById("department").value;
+
+    document.getElementById("errName").textContent = "";
+    document.getElementById("errPhone").textContent = "";
+    document.getElementById("errDept").textContent = "";
+    document.getElementById("errEmail")?.remove();
+
+    // Name validation
+    if (!name) {
+        document.getElementById("errName").textContent = "Name is required.";
+        valid = false;
+    }
+
+    // Phone validation - exactly 10 digits
+    if (!/^\d{10}$/.test(phone)) {
+        document.getElementById("errPhone").textContent = "Phone must be exactly 10 digits.";
+        valid = false;
+    }
+
+    // Email validation - only if entered
+    if (email && !/^[a-z]{2}\d{4}@srmist\.edu\.in$/.test(email)) {
+        let errEmail = document.createElement("div");
+        errEmail.className = "error";
+        errEmail.id = "errEmail";
+        errEmail.textContent = "Email must be in format: ab1234@srmist.edu.in";
+        document.getElementById("email").after(errEmail);
+        valid = false;
+    }
+
+    // Department validation
+    if (!dept) {
+        document.getElementById("errDept").textContent = "Select a department.";
+        valid = false;
+    }
+
+    if (valid) {
+        document.getElementById("successModal").style.display = "flex";
+        this.reset();
+    }
+});
+
+    });
+
+    // Close modal
+    document.getElementById("closeModal").addEventListener("click", () => {
+        document.getElementById("successModal").style.display = "none";
+    });
+</script>
+
+</body>
+</html>

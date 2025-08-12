@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>XYZ Hospital - Patient Registration</title>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    
+    :root {
+        --primary: #667eea;
+        --primary-dark: #5a67d8;
+        --secondary: #764ba2;
+        --accent: #f093fb;
+        --success: #4ade80;
+        --danger: #f87171;
+        --warning: #fbbf24;
+        --bg-main: #0f0f23;
+        --bg-card: rgba(255, 255, 255, 0.05); 
+        --bg-card-hover: rgba(255, 255, 255, 0.1);
+        --text: #ffffff;
+        --text-muted: #a0aec0;
+        --border: rgba(255, 255, 255, 0.1);
+        --shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+        --radius: 16px;
+        --radius-lg: 24px;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        background: var(--bg-main);
+        color: var(--text);
+        overflow-x: hidden;
+        min-height: 100vh;
+    }
+
+    /* Animated Background */
+    body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: 
+            radial-gradient(circle at 20% 80%, #667eea33 0%, transparent 50%),
+            radial-gradient(circle at 80% 20%, #764ba233 0%, transparent 50%),
+            radial-gradient(circle at 40% 40%, #f093fb22 0%, transparent 50%);
+        animation: gradientShift 15s ease infinite;
+        z-index: -1;
+    }
+
+    @keyframes gradientShift {
+        0%, 100% { opacity: 1; transform: scale(1) rotate(0deg); }
+        50% { opacity: 0.8; transform: scale(1.1) rotate(180deg); }
+    }
+
+    /* Enhanced Header */
+    header {
+        background: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid var(--border);
+        padding: 16px 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        animation: slideDown 0.6s ease;
+    }
+
+    .logo {
+        font-size: 24px;
+        font-weight: 700;
+        background: linear-gradient(135deg, var(--primary), var(--accent));
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .logo::before {
+        content: '🏥';
+        font-size: 28px;
+        filter: drop-shadow(0 0 10px rgba(102, 126, 234, 0.5));
+    }
+
+    header nav {
+        display: flex;
+        gap: 8px;
+    }
+
+    header nav a {
+        color: var(--text);
+        text-decoration: none;
+        padding: 8px 16px;
+        border-radius: var(--radius);
+        font-weight: 500;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    header nav a::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+        transition: left 0.5s;
+    }
+
+    header nav a:hover {
+        background: var(--bg-card-hover);
+        transform: translateY(-2px);
+        color: var(--accent);
+    }
+
+    header nav a:hover::before {
+        left: 100%;
+    }
+
+    /* Container with perfect layout */
+    .container {
+        max-width: 1200px;
+        margin: 32px auto;
+        padding: 24px;
+        display: grid;
+        grid-template-columns: 400px 1fr;
+        gap: 32px;
+        animation: fadeInUp 0.8s ease;
+    }
+
+    @keyframes slideDown {
+        from { transform: translateY(-100%); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+
+    @keyframes fadeInUp {
+        from { transform: translateY(40px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+
+    /* Stunning Department Cards */
+    .departments {
+        background: var(--bg-card);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 24px;
+        box-shadow: var(--shadow);
+        height: fit-content;
+        position: sticky;
+        top: 120px;
+    }
+
+    .departments h3 {
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 20px;
+        background: linear-gradient(135deg, var(--primary), var(--accent));
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .dept-card {
+        padding: 16px 20px;
+        border-radius: var(--radius);
+        margin-bottom: 12px;
+        background: rgba(255, 255, 255, 0.03);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 500;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 1px solid transparent;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .dept-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+        transition: left 0.6s;
+    }
+
+    .dept-card:hover {
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        transform: translateX(8px) scale(1.02);
+        border-color: var(--accent);
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+    }
+
+    .dept-card:hover::before {
+        left: 100%;
+    }
+
+    .dept-card.selected {
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        border-color: var(--accent);
+        transform: translateX(8px);
+    }
+
+    .dept-icon {
+        font-size: 24px;
+        filter: drop-shadow(0 0 8px currentColor);
+    }
+
+    /* Gorgeous Form Card */
+    .form-card {
+        background: var(--bg-card);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 32px;
+        box-shadow: var(--shadow);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .form-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 200px;
+        height: 200px;
+        background: radial-gradient(circle, var(--accent)22, transparent);
+        border-radius: 50%;
+        transform: translate(50%, -50%);
+        z-index: -1;
+    }
+
+    .form-card h2 {
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: 8px;
+        background: linear-gradient(135deg, var(--primary), var(--accent));
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .form-subtitle {
+        color: var(--text-muted);
+        margin-bottom: 32px;
+        font-size: 16px;
+    }
+
+    /* Enhanced Form Groups */
+    .form-group {
+        margin-bottom: 24px;
+        position: relative;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: var(--text);
+        font-size: 14px;
+        letter-spacing: 0.025em;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 14px 16px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        font-size: 16px;
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        backdrop-filter: blur(10px);
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+        outline: none;
+        border-color: var(--accent);
+        background: rgba(255, 255, 255, 0.08);
+        box-shadow: 0 0 0 3px rgba(240, 147, 251, 0.1);
+        transform: translateY(-2px);
+    }
+
+    .form-group input::placeholder {
+        color: var(--text-muted);
+    }
+
+    /* Beautiful Checkbox Group */
+    .checkbox-group {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin-top: 8px;
+    }
+
+    .checkbox-wrapper {
+        position: relative;
+    }
+
+    .checkbox-wrapper input[type="checkbox"] {
+        appearance: none;
+        width: 20px;
+        height: 20px;
+        border: 2px solid var(--border);
+        border-radius: 6px;
+        background: transparent;
+        cursor: pointer;
+        position: relative;
+        transition: all 0.3s;
+        margin: 0;
+    }
+
+    .checkbox-wrapper input[type="checkbox"]:checked {
+        background: linear-gradient(135deg, var(--primary), var(--accent));
+        border-color: var(--accent);
+        transform: scale(1.1);
+    }
+
+    .checkbox-wrapper input[type="checkbox"]:checked::after {
+        content: '✓';
+        position: absolute;
+        color: white;
+        font-size: 12px;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-weight: bold;
+    }
+
+    .checkbox-wrapper label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+        cursor: pointer;
+        padding: 8px 12px;
+        border-radius: var(--radius);
+        transition: background 0.3s;
+        margin: 0;
+    }
+
+    .checkbox-wrapper label:hover {
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    /* Stunning Buttons */
+    .btn {
+        padding: 14px 28px;
+        border: none;
+        border-radius: var(--radius);
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 600;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        transition: left 0.5s;
+    }
+
+    .btn:hover::before {
+        left: 100%;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: white;
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-secondary {
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--text);
+        border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.15);
+        transform: translateY(-2px);
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 16px;
+        margin-top: 32px;
+    }
+
+    /* Error Messages */
+    .error {
+        color: var(--danger);
+        font-size: 12px;
+        margin-top: 6px;
+        font-weight: 500;
+        animation: shake 0.5s ease;
+    }
+
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-4px); }
+        75% { transform: translateX(4px); }
+    }
+
+    /* Epic Modal */
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(10px);
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        animation: modalFade 0.3s ease;
+    }
+
+    @keyframes modalFade {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    .modal-content {
+        background: var(--bg-card);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--border);
+        padding: 40px;
+        border-radius: var(--radius-lg);
+        text-align: center;
+        max-width: 400px;
+        width: 90%;
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
+        animation: modalSlide 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .modal-content::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: conic-gradient(from 0deg, var(--primary), var(--accent), var(--secondary), var(--primary));
+        animation: rotate 4s linear infinite;
+        z-index: -1;
+    }
+
+    .modal-content::after {
+        content: '';
+        position: absolute;
+        inset: 2px;
+        background: var(--bg-card);
+        border-radius: calc(var(--radius-lg) - 2px);
+        z-index: -1;
+    }
+
+    @keyframes modalSlide {
+        from { transform: scale(0.8) translateY(40px); opacity: 0; }
+        to { transform: scale(1) translateY(0); opacity: 1; }
+    }
+
+    @keyframes rotate {
+        to { transform: rotate(360deg); }
+    }
+
+    .modal h3 {
+        font-size: 24px;
+        margin-bottom: 16px;
+        background: linear-gradient(135deg, var(--success), var(--accent));
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .modal p {
+        color: var(--text-muted);
+        margin-bottom: 24px;
+        font-size: 16px;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .container {
+            grid-template-columns: 1fr;
+            gap: 24px;
+            margin: 16px auto;
+            padding: 16px;
+        }
+        
+        .departments {
+            position: static;
+        }
+        
+        header {
+            flex-direction: column;
+            gap: 16px;
+            text-align: center;
+        }
+        
+        .form-actions {
+            flex-direction: column;
+        }
+    }
+
+    /* Loading Animation */
+    .loading {
+        position: relative;
+    }
+
+    .loading::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 20px;
+        height: 20px;
+        border: 2px solid transparent;
+        border-top: 2px solid white;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        to { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+</style>
+</head>
+<body>
+
+<header>
+    <div class="logo">
+        <strong>XYZ Hospital</strong>
+    </div>
+    <nav>
+        <a href="#home">Home</a>
+        <a href="#departments">Departments</a>
+        <a href="#services">Services</a>
+        <a href="#contact">Contact</a>
+    </nav>
+</header>
+
+<div class="container">
+    <!-- Enhanced Departments -->
+    <div class="departments">
+        <h3>Select Department</h3>
+        <div class="dept-card" data-dept="Registration">
+            <span class="dept-icon">📝</span>
+            <span>Registration</span>
+        </div>
+        <div class="dept-card" data-dept="ENT">
+            <span class="dept-icon">👂</span>
+            <span>ENT Specialist</span>
+        </div>
+        <div class="dept-card" data-dept="Cardiology">
+            <span class="dept-icon">❤️</span>
+            <span>Cardiology</span>
+        </div>
+        <div class="dept-card" data-dept="Orthopedics">
+            <span class="dept-icon">🦴</span>
+            <span>Orthopedics</span>
+        </div>
+        <div class="dept-card" data-dept="Neurology">
+            <span class="dept-icon">🧠</span>
+            <span>Neurology</span>
+        </div>
+        <div class="dept-card" data-dept="Pediatrics">
+            <span class="dept-icon">👶</span>
+            <span>Pediatrics</span>
+        </div>
+    </div>
+
+    <!-- Enhanced Registration Form -->
+    <div class="form-card">
+        <h2>Patient Registration</h2>
+        <p class="form-subtitle">Complete your registration to schedule your appointment</p>
+        
+        <form id="regForm">
+            <div class="form-group">
+                <label for="name">Full Name *</label>
+                <input type="text" id="name" name="name" placeholder="Enter your full name" required />
+                <div class="error" id="errName"></div>
+            </div>
+            
+            <div class="form-group">
+                <label for="phone">Phone Number *</label>
+                <input type="tel" id="phone" name="phone" placeholder="10-digit mobile number" required />
+                <div class="error" id="errPhone"></div>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email Address (Optional)</label>
+                <input type="email" id="email" name="email" placeholder="your.email@domain.com" />
+                <div class="error" id="errEmail"></div>
+            </div>
+            
+            <div class="form-group">
+                <label for="age">Age *</label>
+                <input type="number" id="age" name="age" placeholder="Enter your age" min="1" max="120" required />
+                <div class="error" id="errAge"></div>
+            </div>
+            
+            <div class="form-group">
+                <label for="department">Department *</label>
+                <select id="department" name="department" required>
+                    <option value="">Choose a department...</option>
+                    <option value="Registration">Registration</option>
+                    <option value="ENT">ENT Specialist</option>
+                    <option value="Cardiology">Cardiology</option>
+                    <option value="Orthopedics">Orthopedics</option>
+                    <option value="Neurology">Neurology</option>
+                    <option value="Pediatrics">Pediatrics</option>
+                </select>
+                <div class="error" id="errDept"></div>
+            </div>
+            
+            <div class="form-group">
+                <label>Service Type</label>
+                <div class="checkbox-group">
+                    <div class="checkbox-wrapper">
+                        <label>
+                            <input type="checkbox" name="service" value="First Visit" />
+                            First Visit
+                        </label>
+                    </div>
+                    <div class="checkbox-wrapper">
+                        <label>
+                            <input type="checkbox" name="service" value="Follow-up" />
+                            Follow-up
+                        </label>
+                    </div>
+                    <div class="checkbox-wrapper">
+                        <label>
+                            <input type="checkbox" name="service" value="Emergency" />
+                            Emergency
+                        </label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="notes">Additional Notes</label>
+                <textarea id="notes" name="notes" rows="3" placeholder="Any additional information or special requirements..."></textarea>
+            </div>
+            
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                    Register Patient
+                </button>
+                <button type="reset" class="btn btn-secondary">
+                    Clear Form
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Enhanced Success Modal -->
+<div class="modal" id="successModal">
+    <div class="modal-content">
+        <h3>✨ Registration Successful!</h3>
+        <p>Your registration has been completed successfully. We will contact you shortly with your appointment details.</p>
+        <button class="btn btn-primary" id="closeModal">Awesome!</button>
+    </div>
+</div>
+
+<script>
+    // Enhanced department selection
+    const deptCards = document.querySelectorAll(".dept-card");
+    const deptSelect = document.getElementById("department");
+    
+    deptCards.forEach(card => {
+        card.addEventListener("click", () => {
+            // Remove selected class from all cards
+            deptCards.forEach(c => c.classList.remove("selected"));
+            // Add selected class to clicked card
+            card.classList.add("selected");
+            // Set department value
+            deptSelect.value = card.dataset.dept;
+            // Add visual feedback
+            card.style.animation = "none";
+            setTimeout(() => {
+                card.style.animation = "";
+            }, 10);
+        });
+    });
+
+    // Enhanced form validation with real-time feedback
+    const form = document.getElementById("regForm");
+    const inputs = form.querySelectorAll("input, select");
+    
+    inputs.forEach(input => {
+        input.addEventListener("blur", () => validateField(input));
+        input.addEventListener("input", () => {
+            if (input.classList.contains("error-field")) {
+                validateField(input);
+            }
+        });
+    });
+
+    function validateField(field) {
+        const fieldName = field.name;
+        const value = field.value.trim();
+        let isValid = true;
+        let errorMsg = "";
+
+        // Clear previous error
+        const errorEl = document.getElementById(`err${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)}`);
+        if (errorEl) errorEl.textContent = "";
+        field.classList.remove("error-field");
+
+        switch (fieldName) {
+            case "name":
+                if (!value) {
+                    errorMsg = "Full name is required";
+                    isValid = false;
+                } else if (value.length < 2) {
+                    errorMsg = "Name must be at least 2 characters";
+                    isValid = false;
+                } else if (!/^[a-zA-Z\s]+$/.test(value)) {
+                    errorMsg = "Name can only contain letters and spaces";
+                    isValid = false;
+                }
+                break;
+
+            case "phone":
+                if (!value) {
+                    errorMsg = "Phone number is required";
+                    isValid = false;
+                } else if (!/^\d{10}$/.test(value)) {
+                    errorMsg = "Phone must be exactly 10 digits";
+                    isValid = false;
+                }
+                break;
+
+            case "email":
+                if (value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+                    errorMsg = "Please enter a valid email address";
+                    isValid = false;
+                }
+                break;
+
+            case "age":
+                const age = parseInt(value);
+                if (!value) {
+                    errorMsg = "Age is required";
+                    isValid = false;
+                } else if (age < 1 || age > 120) {
+                    errorMsg = "Age must be between 1 and 120";
+                    isValid = false;
+                }
+                break;
+
+            case "department":
+                if (!value) {
+                    errorMsg = "Please select a department";
+                    isValid = false;
+                }
+                break;
+        }
+
+        if (!isValid && errorEl) {
+            errorEl.textContent = errorMsg;
+            field.classList.add("error-field");
+        }
+
+        return isValid;
+    }
+
+    // Enhanced form submission
+    form.addEventListener("submit", async function(e) {
+        e.preventDefault();
+        
+        // Validate all fields
+        let isFormValid = true;
+        inputs.forEach(input => {
+            if (!validateField(input)) {
+                isFormValid = false;
+            }
+        });
+
+        if (!isFormValid) {
+            // Shake form on error
+            this.style.animation = "shake 0.5s ease";
+            setTimeout(() => {
+                this.style.animation = "";
+            }, 500);
+            return;
+        }
+
+        // Show loading state
+        const submitBtn = this.querySelector('.btn-primary');
+        const originalText = submitBtn.textContent;
+        submitBtn.classList.add('loading');
+        submitBtn.textContent = "Processing...";
+        submitBtn.disabled = true;
+
+        // Simulate API call
+        await new Promise(resolve => setTimeout(resolve, 1500));
+
+        // Show success modal
+        document.getElementById("successModal").style.display = "flex";
+        
+        // Reset form and button
+        this.reset();
+        deptCards.forEach(card => card.classList.remove("selected"));
+        submitBtn.classList.remove('loading');
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+    });
+
+    // Enhanced modal handling
+    const modal = document.getElementById("successModal");
+    const closeBtn = document.getElementById("closeModal");
+
+    closeBtn.addEventListener("click", () => {
+        modal.style.animation = "modalFade 0.3s ease reverse";
+        setTimeout(() => {
+            modal.style.display = "none";
+            modal.style.animation = "";
+        }, 300);
+    });
+
+    // Close modal on outside click
+    modal.addEventListener("click", (e) => {
+        if (e.target === modal) {
+            closeBtn.click();
+        }
+    });
+
+    // Keyboard navigation
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && modal.style.display === "flex") {
+            closeBtn.click();
+        }
+    });
+
+    // Add some interactive particles (optional enhancement)
+    function createParticle(x, y) {
+        const particle = document.createElement('div');
+        particle.style.position = 'fixed';
+        particle.style.left = x + 'px';
+        particle.style.top = y + 'px';
+        particle.style.width = '4px';
+        particle.style.height = '4px';
+        particle.style.backgroundColor = '#667eea';
+        particle.style.borderRadius = '50%';
+        particle.style.pointerEvents = 'none';
+        particle.style.zIndex = '1000';
+        particle.style.animation = 'particleFloat 2s ease-out forwards';
+        
+        document.body.appendChild(particle);
+        
+        setTimeout(() => particle.remove(), 2000);
+    }
+
+    // Add CSS for particle animation
+    const particleStyle = document.createElement('style');
+    particleStyle.textContent = `
+        @keyframes particleFloat {
+            to {
+                transform: translateY(-100px) scale(0);
+                opacity: 0;
+            }
+        }
+        
+        .error-field {
+            border-color: var(--danger) !important;
+            box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.1) !important;
+        }
+    `;
+    document.head.appendChild(particleStyle);
+
+    // Add particle effect on successful interactions
+    deptCards.forEach(card => {
+        card.addEventListener('click', (e) => {
+            const rect = card.getBoundingClientRect();
+            createParticle(rect.left + rect.width/2, rect.top + rect.height/2);
+        });
+    });
+</script>
+
+</body>
+</html>

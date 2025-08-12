@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>XYZ Hospital — Patient Registration</title>
+<style>
+  :root{
+    --bg:#f4f7fb;
+    --card:#ffffff;
+    --muted:#6b7280;
+    --accent:#2563eb;
+    --success:#16a34a;
+    --shadow: 0 6px 18px rgba(20,20,40,0.06);
+    --radius:12px;
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  }
+  html,body{height:100%;}
+  body{
+    margin:0; background:linear-gradient(180deg,var(--bg),#eef4ff 60%);
+    display:flex; align-items:center; justify-content:center; padding:36px;
+    color:#111827;
+  }
+
+  .container{
+    width:100%; max-width:1024px;
+    display:grid; grid-template-columns: 1fr 1.2fr; gap:22px;
+    align-items:start;
+  }
+
+  /* card appearance */
+  .card{
+    background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow);
+    padding:20px; box-sizing:border-box;
+  }
+
+  /* left: department list */
+  .dept-card{ display:flex; flex-direction:column; gap:12px; }
+  .logo{
+    font-weight:700; letter-spacing:0.6px; font-size:20px; color:var(--accent);
+  }
+  .tagline{ font-size:13px; color:var(--muted); margin-bottom:6px; }
+
+  .dept-list{ margin-top:10px; display:flex; flex-direction:column; gap:8px; }
+  .dept-item{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:10px 12px; border-radius:10px; background:#fbfdff; cursor:pointer;
+    border:1px solid rgba(37,99,235,0.06);
+  }
+  .dept-item:hover{ transform:translateY(-2px); transition:all .15s ease; }
+  .dept-item .name{ font-weight:600; color:#0f172a; }
+  .dept-item .small{ font-size:12px; color:var(--muted); }
+
+  /* right: form */
+  form{ display:flex; flex-direction:column; gap:12px; }
+  .row{ display:flex; gap:12px; }
+  .col{ flex:1; }
+
+  label{ font-size:13px; color:#0f172a; display:block; margin-bottom:6px; font-weight:600; }
+  input[type="text"], input[type="tel"], input[type="email"], select, textarea{
+    width:100%; padding:10px 12px; border:1px solid #e6eefc; border-radius:10px;
+    background:#fbfdff; font-size:14px; box-sizing:border-box;
+  }
+  textarea{ min-height:90px; resize:vertical; }
+
+  .checks{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+  .check{ display:flex; gap:8px; align-items:center; padding:8px 10px; background:#fff; border-radius:8px; border:1px solid #eef4ff; }
+  .check input{ transform:scale(1.05); }
+
+  .actions{ display:flex; gap:12px; align-items:center; margin-top:8px; }
+  button{
+    padding:10px 16px; border-radius:10px; border:0; cursor:pointer; font-weight:700;
+    box-shadow:0 6px 14px rgba(37,99,235,0.12);
+  }
+  .btn-primary{ background:var(--accent); color:white; }
+  .btn-ghost{ background:#fff; border:1px solid #e6eefc; color:#0f172a; }
+
+  .hint{ font-size:13px; color:var(--muted); margin-top:6px; }
+
+  .note{ font-size:13px; color:#9ca3af; }
+
+  .success{
+    display:none; padding:12px; border-radius:10px; background: #ecfdf5; color:var(--success);
+    border:1px solid rgba(16,185,129,0.12); font-weight:600;
+  }
+
+  /* validation messages */
+  .error{ color:#dc2626; font-size:13px; margin-top:6px; }
+
+  /* responsive */
+  @media (max-width:880px){
+    .container{ grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+  <main class="container" aria-labelledby="pageTitle">
+    <!-- LEFT column: departments / wireframe list -->
+    <aside class="card dept-card" aria-label="Departments">
+      <div>
+        <div class="logo">XYZ Hospital</div>
+        <div class="tagline">Compassionate care • Modern facilities</div>
+      </div>
+
+      <div class="dept-list" id="departmentList">
+        <!-- departments are clickable to auto-select in the form -->
+        <div class="dept-item" data-dept="Registration" tabindex="0">
+          <div><div class="name">Registration</div><div class="small">Start here</div></div>
+          <div class="small">➜</div>
+        </div>
+
+        <div class="dept-item" data-dept="ENT" tabindex="0">
+          <div><div class="name">ENT</div><div class="small">Ear, Nose & Throat</div></div>
+          <div class="small">➜</div>
+        </div>
+
+        <div class="dept-item" data-dept="Cardiology" tabindex="0">
+          <div><div class="name">Cardiology</div><div class="small">Heart & Vascular</div></div>
+          <div class="small">➜</div>
+        </div>
+
+        <div class="dept-item" data-dept="Orthopedics" tabindex="0">
+          <div><div class="name">Orthopedics</div><div class="small">Bones & Joints</div></div>
+          <div class="small">➜</div>
+        </div>
+      </div>
+
+      <div class="hint">Tip: Click a department to auto-fill the form.</div>
+    </aside>
+
+    <!-- RIGHT column: form -->
+    <section class="card" aria-labelledby="formHead">
+      <h2 id="formHead" style="margin:0 0 12px 0">Patient Registration</h2>
+
+      <div class="success" id="successBox" role="status" aria-live="polite">
+        Registration successful — thank you! We will contact you shortly.
+      </div>
+
+      <form id="regForm" novalidate>
+        <div class="row">
+          <div class="col">
+            <label for="fullName">Full name *</label>
+            <input id="fullName" name="fullName" type="text" autocomplete="name" placeholder="e.g. Priya Ravuru" required />
+            <div class="error" id="errName" aria-live="polite"></div>
+          </div>
+
+          <div class="col">
+            <label for="phone">Phone *</label>
+            <input id="phone" name="phone" type="tel" inputmode="tel" placeholder="+91 98XXXXXXXX" required />
+            <div class="error" id="errPhone" aria-live="polite"></div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" placeholder="optional — for confirmations" />
+          </div>
+
+          <div class="col">
+            <label for="department">Department *</label>
+            <select id="department" name="department" required>
+              <option value="">Choose department...</option>
+              <option>Registration</option>
+              <option>ENT</option>
+              <option>Cardiology</option>
+              <option>Orthopedics</option>
+            </select>
+            <div class="error" id="errDept" aria-live="polite"></div>
+          </div>
+        </div>
+
+        <div>
+          <label for="doctor">Preferred doctor (optional)</label>
+          <input id="doctor" name="doctor" type="text" placeholder="Dr. S. Kumar" />
+        </div>
+
+        <div>
+          <label for="concerns">Medical concerns / notes</label>
+          <textarea id="concerns" name="concerns" placeholder="Short description of symptoms, allergies, medicines..."></textarea>
+        </div>
+
+        <div>
+          <label>Service type</label>
+          <div class="checks" role="group" aria-label="Service type options">
+            <label class="check"><input type="checkbox" name="service" value="First Visit"> First Visit</label>
+            <label class="check"><input type="checkbox" name="service" value="Follow-up"> Follow-up</label>
+            <label class="check"><input type="checkbox" name="service" value="Emergency"> Emergency</label>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="btn-primary" type="submit">Submit registration</button>
+          <button type="button" class="btn-ghost" id="resetBtn">Reset</button>
+          <div class="note" id="formNote">Fields marked * are required.</div>
+        </div>
+      </form>
+    </section>
+  </main>
+
+<script>
+  // Small helper: select and show validation errors
+  const form = document.getElementById('regForm');
+  const successBox = document.getElementById('successBox');
+  const errName = document.getElementById('errName');
+  const errPhone = document.getElementById('errPhone');
+  const errDept = document.getElementById('errDept');
+
+  // When clicking departments on left, fill the department select
+  document.getElementById('departmentList').addEventListener('click', e => {
+    const card = e.target.closest('.dept-item');
+    if (!card) return;
+    const dept = card.dataset.dept;
+    const select = document.getElementById('department');
+    select.value = dept;
+    select.focus();
+  });
+
+  // Make dept items keyboard accessible (Enter/Space)
+  document.querySelectorAll('.dept-item').forEach(item => {
+    item.addEventListener('keydown', ev => {
+      if (ev.key === 'Enter' || ev.key === ' ') {
+        ev.preventDefault();
+        item.click();
+      }
+    });
+  });
+
+  // Basic phone validator for Indian-style numbers (loose)
+  function validatePhone(value) {
+    // allow +country and 7-12 digits - relaxed pattern
+    const cleaned = value.replace(/\s+/g,'');
+    return /^\+?\d{7,12}$/.test(cleaned);
+  }
+
+  form.addEventListener('submit', (ev) => {
+    ev.preventDefault();
+    // clear errors
+    errName.textContent = '';
+    errPhone.textContent = '';
+    errDept.textContent = '';
+    successBox.style.display = 'none';
+
+    const data = new FormData(form);
+    const name = data.get('fullName').trim();
+    const phone = data.get('phone').trim();
+    const dept = data.get('department').trim();
+
+    let ok = true;
+    if (!name) {
+      errName.textContent = 'Please enter full name.';
+      ok = false;
+    }
+    if (!phone || !validatePhone(phone)) {
+      errPhone.textContent = 'Please enter a valid phone number (digits only, include country code if needed).';
+      ok = false;
+    }
+    if (!dept) {
+      errDept.textContent = 'Please choose a department.';
+      ok = false;
+    }
+
+    if (!ok) {
+      // keep form values intact; show top hint
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+
+    // Simulate success (no backend): show success message and clear non-essential fields after a short delay
+    successBox.style.display = 'block';
+    successBox.focus();
+    // after 2.5s, clear form but keep last department selected to show continuity
+    setTimeout(() => {
+      const lastDept = form.department.value;
+      form.reset();
+      form.department.value = lastDept;
+    }, 1500);
+  });
+
+  // Reset button behavior
+  document.getElementById('resetBtn').addEventListener('click', () => {
+    form.reset();
+    errName.textContent = ''; errPhone.textContent = ''; errDept.textContent = '';
+    successBox.style.display = 'none';
+  });
+
+  // Small accessibility improvement: focus success when it's shown
+  const observer = new MutationObserver(() => {
+    if (getComputedStyle(successBox).display !== 'none') successBox.setAttribute('tabindex', '-1'), successBox.focus();
+  });
+  observer.observe(successBox, { attributes: true, attributeFilter: ['style'] });
+</script>
+</body>
+</html>
