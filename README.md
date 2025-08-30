@@ -1,5 +1,4 @@
 
-````markdown
 # 🏥 XYZ Hospital - Patient Registration Portal  
 
 An elegant, fully responsive **Patient Registration Web Application** designed for **XYZ Hospital**, featuring a modern glassmorphism UI, smooth animations, interactive department selection, and real-time form validation.  
